@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="tk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Aýdym Öýi</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700&family=Rubik:wght@400;500&display=swap">
+<style>
+:root{
+  color-scheme:dark;
+  --ink:#10191d; --sea:#1b3a40; --sand:#f1e6cf; --amber:#f2a93b; --muted:#93a8a6; --line:rgba(241,230,207,.14);
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:radial-gradient(circle at 20% 0,var(--sea),var(--ink) 60%) fixed;color:var(--sand);font-family:Rubik,system-ui,sans-serif;min-height:100vh}
+main{max-width:980px;margin:0 auto;padding:24px 18px 40px;display:grid;grid-template-columns:340px 1fr;gap:32px}
+@media(max-width:780px){main{grid-template-columns:1fr}}
+h1{grid-column:1/-1;font-family:Fraunces,Georgia,serif;font-size:clamp(2rem,6vw,3.2rem);margin:0}
+button{font:inherit;color:inherit;background:none;border:1px solid var(--line);border-radius:50%;width:44px;height:44px;cursor:pointer;display:grid;place-items:center}
+button:hover{border-color:var(--amber)}
+button:focus-visible,input:focus-visible,.up:focus-within{outline:3px solid var(--amber);outline-offset:2px}
+button.on{color:var(--amber);border-color:var(--amber)}
+svg{width:20px;height:20px;fill:currentColor}
+
+/* Plastinka */
+.vinyl{width:min(100%,300px);aspect-ratio:1;margin:0 auto 20px;border-radius:50%;
+  background:repeating-radial-gradient(circle,#0b0f11 0 3px,#171f22 3px 5px);
+  display:grid;place-items:center;box-shadow:0 20px 50px rgba(0,0,0,.5);animation:spin 6s linear infinite;animation-play-state:paused}
+.playing .vinyl{animation-play-state:running}
+.label{width:36%;aspect-ratio:1;border-radius:50%;background:var(--amber);display:grid;place-items:center;color:var(--ink);font-family:Fraunces,Georgia,serif;font-size:2rem}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.vinyl{animation:none}}
+
+.now h2{font-family:Fraunces,Georgia,serif;margin:0;font-size:1.6rem}
+.now p{margin:2px 0 14px;color:var(--muted)}
+input[type=range]{width:100%;accent-color:var(--amber)}
+.t{display:flex;justify-content:space-between;color:var(--muted);font-size:.85rem}
+.ctl{display:flex;align-items:center;justify-content:center;gap:12px;margin:14px 0}
+#play{width:60px;height:60px;background:var(--amber);color:var(--ink);border:0}
+.vol{display:flex;gap:10px;align-items:center;color:var(--muted);font-size:.9rem}
+
+/* Sanaw */
+.side{min-width:0}
+.top{display:flex;gap:10px;margin-bottom:12px}
+.top input[type=search]{flex:1;min-width:0;background:transparent;border:1px solid var(--line);border-radius:22px;padding:10px 16px;color:inherit;font:inherit}
+.up{border:1px solid var(--amber);color:var(--amber);border-radius:22px;padding:10px 16px;cursor:pointer;white-space:nowrap;position:relative}
+.up input{position:absolute;opacity:0;inset:0;width:100%;cursor:pointer}
+ol{list-style:none;margin:0;padding:0}
+li button{all:unset;box-sizing:border-box;width:100%;display:flex;gap:14px;align-items:center;padding:12px 10px;border-bottom:1px solid var(--line);cursor:pointer}
+li button:hover{background:rgba(241,230,207,.05)}
+li button:focus-visible{outline:3px solid var(--amber);outline-offset:-3px}
+li.cur button{background:rgba(242,169,59,.14)}
+.n{width:24px;text-align:center;color:var(--muted)}
+.i{flex:1;min-width:0}.i b{display:block;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.i span{color:var(--muted);font-size:.85rem}
+.empty{color:var(--muted);padding:24px 4px;line-height:1.6}
+</style>
+</head>
+<body>
+<main id="app">
+  <h1>Aýdym Öýi</h1>
+
+  <section class="now" aria-label="Oýnagyç">
+    <div class="vinyl"><div class="label" id="ico">♪</div></div>
+    <h2 id="title">Aýdym saýla</h2>
+    <p id="artist">Sanawdan aýdym bas ýa-da öz faýlyňy goş</p>
+    <input type="range" id="seek" min="0" max="1000" value="0" aria-label="Wagt">
+    <div class="t"><span id="cur">0:00</span><span id="dur">0:00</span></div>
+    <div class="ctl">
+      <button id="shuf" aria-label="Garyşdyr" title="Garyşdyr"><svg viewBox="0 0 24 24"><path d="M17 3l4 4-4 4V8h-2.6l-3.1 4.3 3.1 4.3H17v-3l4 4-4 4v-3h-3.6l-3.6-5-3.6 5H3v-2h2.8l3.1-4.3L5.8 7H3V5h3.8l3 4.2L12.9 5H17z"/></svg></button>
+      <button id="prev" aria-label="Öňki"><svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zM9.5 12L18 6v12z"/></svg></button>
+      <button id="play" aria-label="Oýna"><svg viewBox="0 0 24 24" id="pi"><path d="M8 5v14l11-7z"/></svg></button>
+      <button id="next" aria-label="Indiki"><svg viewBox="0 0 24 24"><path d="M16 6h2v12h-2zM6 18V6l8.5 6z"/></svg></button>
+      <button id="rep" aria-label="Gaýtala" title="Gaýtala"><svg viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2z"/></svg></button>
+    </div>
+    <label class="vol">Ses <input type="range" id="vol" min="0" max="100" value="80"></label>
+  </section>
+
+  <section class="side" aria-label="Aýdymlar">
+    <div class="top">
+      <input type="search" id="q" placeholder="Aýdym gözle" aria-label="Aýdym gözle">
+      <label class="up">Aýdym goş<input type="file" id="file" accept="audio/*" multiple></label>
+    </div>
+    <ol id="list"></ol>
+  </section>
+</main>
+
+<script>
+/* ===== 1) AÝDYMLARYŇ SANAWY — diňe şu ýeri üýtget =====
+   file: mp3 faýlyň ady (index.html bilen bir papkada bolmaly)
+   Mysal (// aýyryp, öz adyňy ýaz):
+   { title:"Meniň aýdymym", artist:"Aýdymçy", file:"aydym1.mp3" }, */
+const songs = [
+  // { title:"Aýdym 1", artist:"Aýdymçy", file:"aydym1.mp3" },
+  // { title:"Aýdym 2", artist:"Aýdymçy", file:"aydym2.mp3" },
+];
+
+/* ===== 2) ÝAGDAÝ ===== */
+const $ = id => document.getElementById(id);
+const audio = new Audio();
+let cur = -1, shuffle = false, repeat = false, filter = "";
+const fmt = s => isFinite(s) ? `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,"0")}` : "0:00";
+const dur = {}; // aýdymyň uzynlygy ýatda saklanýar
+
+/* ===== 3) SANAWY GÖRKEZMEK ===== */
+function renderList(){
+  const ol = $("list"); ol.innerHTML = "";
+  const q = filter.toLowerCase();
+  const shown = songs.map((s,i)=>[s,i]).filter(([s])=>(s.title+" "+s.artist).toLowerCase().includes(q));
+  if(!shown.length){
+    ol.innerHTML = `<p class="empty">${songs.length ? "Hiç zat tapylmady." : "Heniz aýdym ýok. «Aýdym goş» düwmesini bas ýa-da kodda <b>songs</b> sanawyna aýdymlaryňy ýaz."}</p>`;
+    return;
+  }
+  for(const [s,i] of shown){
+    const li = document.createElement("li");
+    if(i===cur) li.className = "cur";
+    const b = document.createElement("button");
+    b.innerHTML = `<span class="n">${i+1}</span><span class="i"><b></b><span></span></span><span>${dur[i]?fmt(dur[i]):""}</span>`;
+    b.querySelector("b").textContent = s.title;           // textContent — howpsuz
+    b.querySelector(".i span").textContent = s.artist;
+    b.onclick = () => choose(i, true);
+    li.appendChild(b); ol.appendChild(li);
+  }
+}
+
+/* ===== 4) AÝDYM SAÝLAMAK WE OÝNAMAK ===== */
+function choose(i, autoplay){
+  if(!songs[i]) return;
+  cur = i; const s = songs[i];
+  audio.src = s.file;
+  $("title").textContent = s.title;
+  $("artist").textContent = s.artist;
+  $("ico").textContent = s.title.trim().charAt(0).toUpperCase() || "♪";
+  if(autoplay) audio.play().catch(()=>{ $("artist").textContent = "Faýl tapylmady: " + s.file; });
+  renderList();
+}
+function step(d){
+  if(!songs.length) return;
+  let i = shuffle ? Math.floor(Math.random()*songs.length) : (cur + d + songs.length) % songs.length;
+  choose(i, true);
+}
+function toggle(){ if(cur<0){ choose(0,true); } else audio.paused ? audio.play() : audio.pause(); }
+
+/* ===== 5) AUDIO WAKALARY ===== */
+audio.onplay = audio.onpause = () => {
+  const p = !audio.paused;
+  document.body.classList.toggle("playing", p);
+  $("pi").innerHTML = p ? '<path d="M6 5h4v14H6zm8 0h4v14h-4z"/>' : '<path d="M8 5v14l11-7z"/>';
+};
+audio.ontimeupdate = () => {
+  $("cur").textContent = fmt(audio.currentTime);
+  if(audio.duration && document.activeElement !== $("seek")) $("seek").value = audio.currentTime/audio.duration*1000;
+};
+audio.onloadedmetadata = () => { $("dur").textContent = fmt(audio.duration); dur[cur] = audio.duration; renderList(); };
+audio.onended = () => repeat ? (audio.currentTime=0, audio.play()) : step(1);
+
+/* ===== 6) DÜWMELER ===== */
+$("play").onclick = toggle;
+$("next").onclick = () => step(1);
+$("prev").onclick = () => audio.currentTime > 3 ? (audio.currentTime = 0) : step(-1);
+$("seek").oninput = () => { if(audio.duration) audio.currentTime = $("seek").value/1000*audio.duration; };
+$("vol").oninput = () => audio.volume = $("vol").value/100;
+$("shuf").onclick = e => { shuffle = !shuffle; e.currentTarget.classList.toggle("on", shuffle); };
+$("rep").onclick  = e => { repeat = !repeat;  e.currentTarget.classList.toggle("on", repeat); };
+$("q").oninput = e => { filter = e.target.value; renderList(); };
+$("file").onchange = e => {
+  for(const f of e.target.files)
+    songs.push({ title:f.name.replace(/\.[^.]+$/,""), artist:"Meniň faýlym", file:URL.createObjectURL(f) });
+  if(cur<0 && songs.length) choose(0,false); else renderList();
+};
+document.addEventListener("keydown", e => {            // Probel — oýna/duruz
+  if(e.code==="Space" && !/INPUT/.test(document.activeElement.tagName)){ e.preventDefault(); toggle(); }
+});
+
+audio.volume = .8; renderList();
+</script>
+</body>
+</html>
